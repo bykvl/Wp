@@ -1,0 +1,4 @@
+pyrogram
+pywhatkit
+pyautogui
+tgcrypto
