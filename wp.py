@@ -5,6 +5,13 @@ import datetime
 import re
 import asyncio
 
+# Selenium ayarları (EKLENDİ)
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+import time
+import os
+
 # Telegram API bilgileri
 API_ID = 21975331
 API_HASH = "b093d17566449ed473cbdbe6ef7391ea"
@@ -13,13 +20,33 @@ OWNER_ID = 1331544490
 
 # Takip edilecek Telegram kanal ve grupları
 BONUSSOFT_CHANNELS = [
-    -1001513128130, -1001429032175, -1001361953435, -1002205804507, 
-    -1001895945898, -1001595792569, -1001904588149, -1001925728559, 
+    -1001513128130, -1001429032175, -1001361953435, -1002205804507,
+    -1001895945898, -1001595792569, -1001904588149, -1001925728559,
     -1001585898045, -1002254425065, -1002696377133, -1001721415718,
     -1001961458338, -1002321250370, -1001969781945, -1002162241096,
     -1001612421368, -1001528160850, -1002291105468, -1002402728990,
     -1002621151191
 ]
+
+# Selenium ile WhatsApp Web'e giriş (EKLENDİ)
+def selenium_ayar():
+    chrome_options = Options()
+    chrome_options.add_argument('--user-data-dir=C:\\ChromeProfile')  # Profil kaydı için
+    chrome_options.add_argument('--profile-directory=Default')
+    chrome_options.add_argument('--disable-infobars')
+    chrome_options.add_argument('--disable-extensions')
+    chrome_options.add_argument('--start-maximized')
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+
+    driver_path = os.path.join(os.getcwd(), "chromedriver.exe")  # Aynı klasörde olmalı
+    service = Service(driver_path)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver.get("https://web.whatsapp.com")
+
+    print("QR kodu okutup giriş yapman için 60 saniye bekleniyor...")
+    time.sleep(60)  # QR okutma süresi
+    driver.quit()
 
 # Veritabanı bağlantısı
 conn = sqlite3.connect("promosyonlar.db")
@@ -79,6 +106,9 @@ async def mesaj_kontrol(client, message):
                     print("⚠️ Bu promosyon zaten kayıtlı.")
     except Exception as e:
         print(f"❌ Mesaj işleme hatası: {e}")
+
+# QR kod okutulacak (SADECE ilk çalıştırmada gerek)
+selenium_ayar()
 
 # Botu başlat
 print("Bot başlatılıyor...")
